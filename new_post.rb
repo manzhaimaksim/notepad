@@ -3,10 +3,10 @@ require_relative 'link.rb'
 require_relative 'task.rb'
 require_relative 'memo.rb'
 
-puts 'Привет, я твой блокнот!'
+puts 'Привет, я твой блокнот версия 2! Записываю новые записи в базу SQLite3'
 puts 'Что вы хотите записать в блокнот?'
 
-choices = Post.post_types
+choices = Post.post_types.keys
 
 choice = -1
 
@@ -18,8 +18,8 @@ until choice >= 0 && choice < choices.size
   choice = STDIN.gets.chomp.to_i
 end
 
-entry = Post.create(choice)
+entry = Post.create(choices[choice])
 entry.read_from_console
-entry.save
+rowid = entry.save_to_db
 
-puts 'Ваша запись сохранена'
+puts "Ваша запись сохранена в базе, id = #{rowid}"
