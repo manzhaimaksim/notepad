@@ -20,10 +20,10 @@ class Link < Post
 
   def to_db_hash
     return super.merge(
-        {
-          'text' => @text,
-          'url' => @url
-        }
+      {
+          text: @text,
+          url: @url
+      }
     )
   end
 

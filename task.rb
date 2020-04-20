@@ -26,10 +26,10 @@ class Task < Post
 
   def to_db_hash
     return super.merge(
-        {
-            'text' => @text,
-            'due_date' => @due_date
-        }
+      {
+        text: @text,
+        due_date: @due_date.to_s
+      }
     )
   end
 
