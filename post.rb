@@ -14,34 +14,37 @@ class Post
   def self.find(limit, type, id)
     db = SQLite3::Database.open(@@SQLITE_DB_FILE)
 
-    if id.present?
+    # 1. конкретная запись
+    if !id.nil?
       db.results_as_hash = true
+      result = db.execute("SELECT * FROM posts WHERE rowid = ?", id)
       result = result[0] if result.is_a? Array
       db.close
-
       if result.empty?
-        puts 'Такой id #{id} не найден в базе'
+        puts "Такой id #{id} не найден в базе"
         return nil
       else
         post = create(result['type'])
         post.load_data(result)
         return post
       end
+
     else
-      db.results_as_hash = false
-      query = 'SELECT rowid, * FROM posts '
-      query += 'WHERE type = :type ' unless type.nil?
-      query += 'ORDER by rowid DESC'
-      query += 'LIMIT :limit ' unless limit.nil?
-
-      statement = db.prepare query
-      statement.bind_param('type', type) unless type.nil?
-      statement.bind_param('limit', limit) unless limit.nil?
-
-      result = statement.execute!
-      statement.close
-      db.close
-      return result
+    # 2. вернуть таблицу записей
+    #   db.results_as_hash = false
+    #   query = 'SELECT rowid, * FROM posts '
+    #   query += 'WHERE type = :type ' unless type.nil?
+    #   query += 'ORDER by rowid DESC'
+    #   query += 'LIMIT :limit ' unless limit.nil?
+    #
+    #   statement = db.prepare query
+    #   statement.bind_param('type', type) unless type.nil?
+    #   statement.bind_param('limit', limit) unless limit.nil?
+    #
+    #   result = statement.execute!
+    #   statement.close
+    #   db.close
+    #   return result
     end
   end
 
@@ -58,8 +61,8 @@ class Post
 
   def to_db_hash
     {
-        'type' => self.class.name,
-        'created_at' => @created_at.to_s
+        :type => self.class.name,
+        created_at: @created_at.to_s
     }
   end
 
