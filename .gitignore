@@ -4,3 +4,4 @@ Task*
 Link*
 *.sqlite
 *.sqlite-journal
+notepad.sqlite
