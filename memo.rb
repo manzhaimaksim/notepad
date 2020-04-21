@@ -28,6 +28,6 @@ class Memo < Post
 
   def load_data(data_hash)
     super(data_hash)
-    @due_date = data_hash['text'].split('\n\r')
+    @text = data_hash['text'].split('\n\r')
   end
 end
