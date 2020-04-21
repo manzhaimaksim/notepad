@@ -1,7 +1,7 @@
-require_relative 'post.rb'
-require_relative 'link.rb'
-require_relative 'task.rb'
-require_relative 'memo.rb'
+require_relative 'post'
+require_relative 'link'
+require_relative 'task'
+require_relative 'memo'
 
 puts 'Привет, я твой блокнот версия 2! Записываю новые записи в базу SQLite3'
 puts 'Что вы хотите записать в блокнот?'

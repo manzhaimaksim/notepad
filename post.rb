@@ -71,7 +71,7 @@ class Post
     db.results_as_hash = true
 
     db.execute(
-        'INSERT INTO posts (' + to_db_hash.keys.join(', ') + ' VALUES ( ' + ('?,'*to_db_hash.size).chomp(', ') + ')', to_db_hash.values
+        "INSERT INTO posts (#{to_db_hash.keys.join(', ')}) VALUES (#{('?,'*to_db_hash.size).chomp(',')})", to_db_hash.values
     )
     insert_row_id = db.last_insert_row_id
     db.close
