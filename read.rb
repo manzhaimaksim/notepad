@@ -23,7 +23,10 @@ end.parse!
 
 result = Post.find(options[:limit], options[:type], options[:id])
 
-if result.is_a? Post # показываем конкретный пост
+if result.nil?
+  puts "Такой id (#{options[:id]}) не найден в базе"
+  exit
+elsif result.is_a? Post # показываем конкретный пост
   puts "Запись #{result.class.name}, id = #{options[:id]}"
   # выведем весь пост на экран и закроемся
   result.to_strings.each do |line|

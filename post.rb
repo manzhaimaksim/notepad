@@ -20,8 +20,7 @@ class Post
       result = db.execute("SELECT * FROM posts WHERE rowid=?", id)
       result = result[0] if result.is_a? Array
       db.close
-      if result.empty?
-        puts "Такой id #{id} не найден в базе"
+      if result.nil?
         return nil
       else
         post = create(result['type'].to_sym)
