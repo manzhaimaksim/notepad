@@ -33,9 +33,7 @@ if options.key?(:id)
       puts line
     end
   end
-end
-
-if options.key?(:limit) || options.key?(:type)
+else
   result = Post.find_all(options[:limit], options[:type])
   print "| id\t| @type\t|  @created_at\t\t\t|  @text \t\t\t| @url\t\t| @due_date \t "
 

@@ -16,7 +16,13 @@ class Post
     # 1. конкретная запись
     if !id.nil?
       db.results_as_hash = true
-      result = db.execute("SELECT * FROM posts WHERE rowid=?", id)
+      begin
+        result = db.execute("SELECT * FROM posts WHERE rowid=?", id)
+      rescue SQLite3::SQLException => e
+        puts e.message
+        exit
+      end
+
       result = result[0] if result.is_a? Array
       db.close
       if result.nil?
@@ -32,16 +38,21 @@ class Post
     def self.find_all(limit, type)
       # 2. вернуть таблицу записей
       db = SQLite3::Database.open(SQLITE_DB_FILE)
+
       db.results_as_hash = false
+
       query = "SELECT rowid, * FROM posts "
       query += "WHERE type = :type " unless type.nil?
       query += "ORDER by rowid DESC "
       query += "LIMIT :limit " unless limit.nil?
 
-      statement = db.prepare query
+      begin
+        statement = db.prepare query
+      rescue SQLite3::SQLException => e
+        puts e.message
+      end
       statement.bind_param('type', type) unless type.nil?
       statement.bind_param('limit', limit) unless limit.nil?
-
       result = statement.execute!
       statement.close
       db.close
@@ -69,10 +80,13 @@ class Post
   def save_to_db
     db = SQLite3::Database.open(SQLITE_DB_FILE)
     db.results_as_hash = true
-
-    db.execute(
-      "INSERT INTO posts (#{to_db_hash.keys.join(', ')}) VALUES (#{('?,'*to_db_hash.size).chomp(',')})", to_db_hash.values
-    )
+    begin
+      db.execute(
+        "INSERT INTO posts (#{to_db_hash.keys.join(', ')}) VALUES (#{('?,'*to_db_hash.size).chomp(',')})", to_db_hash.values
+      )
+    rescue SQLite3::SQLException => e
+      puts e.message
+    end
     insert_row_id = db.last_insert_row_id
     db.close
     return insert_row_id
