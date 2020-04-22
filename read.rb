@@ -15,26 +15,28 @@ OptionParser.new do |opt|
     exit
   end
 
-  opt.on('--type POST_TYPE', 'какой тип постов показывать (по умолчанию любой)') { |type| options[:type] = type } #
-  opt.on('--id POST_ID', 'если задан id — показываем подробно только этот пост') { |id| options[:id] = id } #
-  opt.on('--limit NUMBER', 'сколько последних постов показать (по умолчанию все)') { |limit| options[:limit] = limit } #
+  opt.on('--type POST_TYPE', 'какой тип постов показывать (по умолчанию любой)') { |type| options[:type] = type }
+  opt.on('--id POST_ID', 'если задан id — показываем подробно только этот пост') { |id| options[:id] = id }
+  opt.on('--limit NUMBER', 'сколько последних постов показать (по умолчанию все)') { |limit| options[:limit] = limit }
 
 end.parse!
 
-result = Post.find(options[:limit], options[:type], options[:id])
-
-if result.nil?
-  puts "Такой id (#{options[:id]}) не найден в базе"
-  exit
-elsif result.is_a? Post # показываем конкретный пост
-  puts "Запись #{result.class.name}, id = #{options[:id]}"
-  # выведем весь пост на экран и закроемся
-  result.to_strings.each do |line|
-    puts line
+if options.key?(:id)
+  result = Post.find_by_id(options[:id])
+  if result.nil?
+    puts "Такой id (#{options[:id]}) не найден в базе"
+    exit
+  else # показываем конкретный пост
+    puts "Запись #{result.class.name}, id = #{options[:id]}"
+    # выведем весь пост на экран и закроемся
+    result.to_strings.each do |line|
+      puts line
+    end
   end
+end
 
-else # показываем таблицу результатов
-
+if options.key?(:limit) || options.key?(:type)
+  result = Post.find_all(options[:limit], options[:type])
   print "| id\t| @type\t|  @created_at\t\t\t|  @text \t\t\t| @url\t\t| @due_date \t "
 
   result.each do |row|
@@ -45,4 +47,5 @@ else # показываем таблицу результатов
     end
   end
 end
+
 puts

@@ -11,9 +11,8 @@ class Post
     post_types[type_index].new
   end
 
-  def self.find(limit, type, id)
+  def self.find_by_id(id)
     db = SQLite3::Database.open(SQLITE_DB_FILE)
-
     # 1. конкретная запись
     if !id.nil?
       db.results_as_hash = true
@@ -27,9 +26,12 @@ class Post
         post.load_data(result)
         return post
       end
+    end
+  end
 
-    else
-    # 2. вернуть таблицу записей
+    def self.find_all(limit, type)
+      # 2. вернуть таблицу записей
+      db = SQLite3::Database.open(SQLITE_DB_FILE)
       db.results_as_hash = false
       query = "SELECT rowid, * FROM posts "
       query += "WHERE type = :type " unless type.nil?
@@ -45,7 +47,6 @@ class Post
       db.close
       return result
     end
-  end
 
   def initialize
     @created_at = Time.now
@@ -70,7 +71,7 @@ class Post
     db.results_as_hash = true
 
     db.execute(
-        "INSERT INTO posts (#{to_db_hash.keys.join(', ')}) VALUES (#{('?,'*to_db_hash.size).chomp(',')})", to_db_hash.values
+      "INSERT INTO posts (#{to_db_hash.keys.join(', ')}) VALUES (#{('?,'*to_db_hash.size).chomp(',')})", to_db_hash.values
     )
     insert_row_id = db.last_insert_row_id
     db.close
